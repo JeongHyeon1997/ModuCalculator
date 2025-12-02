@@ -1,0 +1,52 @@
+# ---------------------------
+# Node / 일반 공통
+# ---------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# 환경 변수
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# ---------------------------
+# Vite / 빌드 결과물
+# ---------------------------
+dist/
+.vite/
+*.local
+
+# ---------------------------
+# 로그 / 임시 파일
+# ---------------------------
+logs
+*.log
+*.log.*
+.DS_Store
+Thumbs.db
+
+# ---------------------------
+# IDE / 에디터
+# ---------------------------
+.vscode/
+.idea/
+*.iml
+
+# ---------------------------
+# OS/기타
+# ---------------------------
+*.swp
+*.swo
+*.tmp
+*.temp
+
+# 테스트 커버리지
+coverage/

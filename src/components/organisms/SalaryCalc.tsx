@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Wallet, Download, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
 import { GlassCard } from '../atoms/GlassCard';
 import { DreamInput } from '../atoms/DreamInput';
 import { SectionTitle } from '../molecules/SectionTitle';
 import { ResultRow } from '../molecules/ResultRow';
 import { formatNumber } from '../../utils/formatters';
-import { downloadFile } from '../../utils/fileDownload';
+import { downloadAsImage } from '../../utils/fileDownload';
 
 export const SalaryCalc: React.FC = () => {
+    const cardRef = useRef<HTMLDivElement>(null);
     const [mode, setMode] = useState<'hourly' | 'salary'>('hourly');
 
     // 알바 모드 State
@@ -96,14 +97,10 @@ export const SalaryCalc: React.FC = () => {
     const albaResult = calculateAlba();
     const salaryResult = calculateSalary();
 
-    const handleDownload = () => {
-        let content = "";
-        if (mode === 'hourly') {
-            content = `[알바 급여 계산]\n시급: ${formatNumber(hourlyWage)}원\n근무: 일 ${hoursPerDay}시간, 주 ${daysPerWeek}일\n주휴수당 포함: ${hasHolidayPay ? '예' : '아니오'}\n\n예상 월 급여: ${formatNumber(albaResult.totalNet)}원`;
-        } else {
-            content = `[직장인 급여 명세]\n${salaryType === 'year' ? '연봉' : '월급'}: ${formatNumber(salaryAmount)}원\n비과세액: ${formatNumber(salaryResult.totalNonTaxable)}원\n\n[공제 내역]\n국민연금: ${formatNumber(salaryResult.pension)}원\n건강보험: ${formatNumber(salaryResult.health)}원\n장기요양: ${formatNumber(salaryResult.care)}원\n고용보험: ${formatNumber(salaryResult.employment)}원\n소득세(지방세포함): ${formatNumber(salaryResult.incomeTax + salaryResult.localTax)}원\n\n★ 실 수령액: ${formatNumber(salaryResult.netPay)}원`;
-        }
-        downloadFile(content, 'salary_slip.txt');
+    const handleDownload = async () => {
+        if (!cardRef.current) return;
+        const fileName = mode === 'hourly' ? '알바급여_결과.png' : '급여명세서_결과.png';
+        await downloadAsImage(cardRef.current, fileName);
     };
 
     return (
@@ -205,7 +202,7 @@ export const SalaryCalc: React.FC = () => {
             </div>
 
             <div className="flex flex-col h-full">
-                <GlassCard className="p-8 flex-1 flex flex-col relative overflow-hidden group">
+                <GlassCard ref={cardRef} className="p-8 flex-1 flex flex-col relative overflow-hidden group">
                     {mode === 'hourly' ? (
                         <>
                             <h4 className="text-lg font-bold text-white mb-6">알바비 예상 수령액</h4>

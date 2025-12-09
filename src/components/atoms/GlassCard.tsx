@@ -8,8 +8,10 @@ interface GlassCardProps {
 /**
  * 디자인 컴포넌트: Glassmorphism 스타일
  */
-export const GlassCard: React.FC<GlassCardProps> = ({ children, className = "" }) => (
-    <div className={`bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl shadow-xl overflow-hidden ${className}`}>
-        {children}
-    </div>
+export const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
+    ({ children, className = "" }, ref) => (
+        <div ref={ref} className={`bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl shadow-xl overflow-hidden ${className}`}>
+            {children}
+        </div>
+    )
 );

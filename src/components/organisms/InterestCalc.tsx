@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { PiggyBank, Download } from 'lucide-react';
 import { GlassCard } from '../atoms/GlassCard';
 import { DreamInput } from '../atoms/DreamInput';
 import { SectionTitle } from '../molecules/SectionTitle';
 import { formatNumber } from '../../utils/formatters';
-import { downloadFile } from '../../utils/fileDownload';
+import { downloadAsImage } from '../../utils/fileDownload';
 
 export const InterestCalc: React.FC = () => {
+    const cardRef = useRef<HTMLDivElement>(null);
     const [principal, setPrincipal] = useState(10000000);
     const [rate, setRate] = useState(3.5);
     const [months, setMonths] = useState(12);
@@ -45,9 +46,9 @@ export const InterestCalc: React.FC = () => {
         return `${Math.max(scaledSize, minSize)}px`;
     };
 
-    const handleDownload = () => {
-        const content = `[꿈의 저축 - 이자 계산]\n\n목표 금액: ${formatNumber(principal)}원\n기간: ${months}개월 (${type === 'simple' ? '단리' : '월복리'}, ${rate}%)\n\n★ 만기 수령액: ${formatNumber(total)}원`;
-        downloadFile(content, 'dream_savings.txt');
+    const handleDownload = async () => {
+        if (!cardRef.current) return;
+        await downloadAsImage(cardRef.current, '저축계산_결과.png');
     };
 
     return (
@@ -80,7 +81,7 @@ export const InterestCalc: React.FC = () => {
                 </div>
             </div>
 
-            <GlassCard className="p-8 flex flex-col justify-between relative overflow-hidden">
+            <GlassCard ref={cardRef} className="p-8 flex flex-col justify-between relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 backdrop-blur-sm z-0"></div>
                 <div className="relative z-10">
                     <h4 className="text-indigo-100 font-medium mb-2">만기 시 나의 자산</h4>

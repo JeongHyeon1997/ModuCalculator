@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Sparkles, ArrowRightLeft, Download } from 'lucide-react';
 import { GlassCard } from '../atoms/GlassCard';
 import { DreamInput } from '../atoms/DreamInput';
 import { SectionTitle } from '../molecules/SectionTitle';
 import { formatNumber } from '../../utils/formatters';
-import { downloadFile } from '../../utils/fileDownload';
+import { downloadAsImage } from '../../utils/fileDownload';
 
 interface RateInfo {
     rate: number;
@@ -17,6 +17,7 @@ interface Rates {
 }
 
 export const ExchangeRateCalc: React.FC = () => {
+    const cardRef = useRef<HTMLDivElement>(null);
     const [baseAmount, setBaseAmount] = useState(1000);
     const [targetCurrency, setTargetCurrency] = useState('USD');
     const [rates, setRates] = useState<Rates | null>(null);
@@ -76,10 +77,9 @@ export const ExchangeRateCalc: React.FC = () => {
 
     const result = calculate();
 
-    const handleDownload = () => {
-        if (!rates) return;
-        const content = `[꿈을 위한 여행 자금 - 환율 계산]\n\n날짜: ${new Date().toLocaleDateString()}\n원화 금액: ${formatNumber(baseAmount)}원\n대상 통화: ${targetCurrency} (${rates[targetCurrency].name})\n적용 환율: ${formatNumber(rates[targetCurrency].rate)}원\n\n★ 환전 예상 금액: ${rates[targetCurrency].symbol} ${formatNumber(result)}`;
-        downloadFile(content, 'dream_trip_exchange.txt');
+    const handleDownload = async () => {
+        if (!cardRef.current) return;
+        await downloadAsImage(cardRef.current, '환율계산_결과.png');
     };
 
     if (loading) return <div className="text-white text-center py-20 animate-pulse">꿈의 환율을 불러오는 중...</div>;
@@ -117,7 +117,7 @@ export const ExchangeRateCalc: React.FC = () => {
                 </div>
             </div>
 
-            <GlassCard className="p-8 flex flex-col justify-between bg-gradient-to-b from-white/10 to-transparent">
+            <GlassCard ref={cardRef} className="p-8 flex flex-col justify-between bg-gradient-to-b from-white/10 to-transparent">
                 <div>
                     <h4 className="text-indigo-200 font-medium mb-4 flex items-center justify-between">
                         <span className="flex items-center"><ArrowRightLeft size={16} className="mr-2" /> 예상 환전 금액</span>

@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Building2, Download, TrendingUp } from 'lucide-react';
 import { GlassCard } from '../atoms/GlassCard';
 import { DreamInput } from '../atoms/DreamInput';
 import { SectionTitle } from '../molecules/SectionTitle';
 import { ResultRow } from '../molecules/ResultRow';
 import { formatNumber } from '../../utils/formatters';
-import { downloadFile } from '../../utils/fileDownload';
+import { downloadAsImage } from '../../utils/fileDownload';
 
 export const LoanCalc: React.FC = () => {
+    const cardRef = useRef<HTMLDivElement>(null);
     const [amount, setAmount] = useState(50000000);
     const [rate, setRate] = useState(5.5);
     const [period, setPeriod] = useState(24);
@@ -43,9 +44,9 @@ export const LoanCalc: React.FC = () => {
         return `${Math.max(scaledSize, minSize)}px`;
     };
 
-    const handleDownload = () => {
-        const content = `[내 집 마련/창업 - 대출 계획]\n\n대출금: ${formatNumber(amount)}원\n금리: ${rate}%\n기간: ${period}개월\n\n★ 월 납입금: ${formatNumber(monthlyPayment)}원`;
-        downloadFile(content, 'dream_loan_plan.txt');
+    const handleDownload = async () => {
+        if (!cardRef.current) return;
+        await downloadAsImage(cardRef.current, '대출계산_결과.png');
     };
 
     return (
@@ -68,7 +69,7 @@ export const LoanCalc: React.FC = () => {
             </div>
 
             <div className="flex flex-col h-full">
-                <GlassCard className="p-8 flex-1 flex flex-col justify-center bg-white/5">
+                <GlassCard ref={cardRef} className="p-8 flex-1 flex flex-col justify-center bg-white/5">
                     <div className="text-center mb-8">
                         <span className="text-indigo-200 text-sm font-medium mb-2 block">매월 준비해야 할 금액</span>
                         <div

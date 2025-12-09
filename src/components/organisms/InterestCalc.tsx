@@ -27,6 +27,24 @@ export const InterestCalc: React.FC = () => {
 
     const { interest, tax, total } = calculate();
 
+    // 숫자 길이에 따라 비율로 폰트 크기 계산
+    const getTotalFontSize = () => {
+        const text = `${formatNumber(total)}원`;
+        const length = text.length;
+        const baseSize = 36; // 기본 폰트 크기
+        const threshold = 10; // 줄어들기 시작하는 기준 자릿수
+
+        if (length <= threshold) {
+            return `${baseSize}px`;
+        }
+
+        // 10자를 초과하면 비율로 줄어듦
+        const scaledSize = baseSize * (threshold / length);
+        const minSize = 14; // 최소 폰트 크기
+
+        return `${Math.max(scaledSize, minSize)}px`;
+    };
+
     const handleDownload = () => {
         const content = `[꿈의 저축 - 이자 계산]\n\n목표 금액: ${formatNumber(principal)}원\n기간: ${months}개월 (${type === 'simple' ? '단리' : '월복리'}, ${rate}%)\n\n★ 만기 수령액: ${formatNumber(total)}원`;
         downloadFile(content, 'dream_savings.txt');
@@ -66,7 +84,10 @@ export const InterestCalc: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 backdrop-blur-sm z-0"></div>
                 <div className="relative z-10">
                     <h4 className="text-indigo-100 font-medium mb-2">만기 시 나의 자산</h4>
-                    <div className="text-4xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-pink-200 mb-8">
+                    <div
+                        className="font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-pink-200 mb-8"
+                        style={{ fontSize: getTotalFontSize() }}
+                    >
                         {formatNumber(total)}원
                     </div>
 

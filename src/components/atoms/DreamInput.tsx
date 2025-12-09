@@ -25,6 +25,8 @@ export const DreamInput: React.FC<DreamInputProps> = ({
         if (type === 'number_format') {
             const num = parseNumber(rawValue);
             if (isNaN(num)) return;
+            // 10자리 제한 (1,000,000,000 미만)
+            if (num >= 10000000000) return;
             onChange(num);
         } else {
             onChange(rawValue);

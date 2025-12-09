@@ -25,6 +25,24 @@ export const LoanCalc: React.FC = () => {
 
     const { monthlyPayment, totalPayment, totalInterest } = calculate();
 
+    // 숫자 길이에 따라 비율로 폰트 크기 계산
+    const getMonthlyPaymentFontSize = () => {
+        const text = `${formatNumber(monthlyPayment)}원`;
+        const length = text.length;
+        const baseSize = 36; // 기본 폰트 크기
+        const threshold = 10; // 줄어들기 시작하는 기준 자릿수
+
+        if (length <= threshold) {
+            return `${baseSize}px`;
+        }
+
+        // 10자를 초과하면 비율로 줄어듦
+        const scaledSize = baseSize * (threshold / length);
+        const minSize = 14; // 최소 폰트 크기
+
+        return `${Math.max(scaledSize, minSize)}px`;
+    };
+
     const handleDownload = () => {
         const content = `[내 집 마련/창업 - 대출 계획]\n\n대출금: ${formatNumber(amount)}원\n금리: ${rate}%\n기간: ${period}개월\n\n★ 월 납입금: ${formatNumber(monthlyPayment)}원`;
         downloadFile(content, 'dream_loan_plan.txt');
@@ -53,7 +71,10 @@ export const LoanCalc: React.FC = () => {
                 <GlassCard className="p-8 flex-1 flex flex-col justify-center bg-white/5">
                     <div className="text-center mb-8">
                         <span className="text-indigo-200 text-sm font-medium mb-2 block">매월 준비해야 할 금액</span>
-                        <div className="text-5xl font-black text-white drop-shadow-lg">
+                        <div
+                            className="font-black text-white drop-shadow-lg"
+                            style={{ fontSize: getMonthlyPaymentFontSize() }}
+                        >
                             {formatNumber(monthlyPayment)}원
                         </div>
                     </div>

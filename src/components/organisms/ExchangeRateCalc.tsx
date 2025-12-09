@@ -23,6 +23,23 @@ export const ExchangeRateCalc: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [lastUpdated, setLastUpdated] = useState('');
 
+    // 숫자 길이에 따라 비율로 폰트 크기 계산
+    const getResultFontSize = (value: number) => {
+        const formattedLength = formatNumber(value).length;
+        const baseSize = 40; // 기본 폰트 크기 (px)
+        const threshold = 10; // 줄어들기 시작하는 기준 자릿수
+
+        if (formattedLength <= threshold) {
+            return `${baseSize}px`;
+        }
+
+        // 10자를 초과하면 비율로 줄어듦
+        const scaledSize = baseSize * (threshold / formattedLength);
+        const minSize = 16; // 최소 폰트 크기
+
+        return `${Math.max(scaledSize, minSize)}px`;
+    };
+
     useEffect(() => {
         const fetchRates = async () => {
             try {
@@ -106,9 +123,13 @@ export const ExchangeRateCalc: React.FC = () => {
                         <span className="flex items-center"><ArrowRightLeft size={16} className="mr-2" /> 예상 환전 금액</span>
                         <span className="text-xs px-2 py-1 bg-black/20 rounded-full">{lastUpdated} 기준</span>
                     </h4>
-                    <div className="text-5xl sm:text-6xl font-black text-white mb-2 tracking-tighter">
-                        <span className="text-3xl opacity-50 mr-2">{rates && rates[targetCurrency].symbol}</span>
-                        {formatNumber(result)}
+                    <div className="font-black text-white mb-2 tracking-tighter flex items-baseline flex-wrap break-words">
+                        <span className="opacity-50 mr-2" style={{ fontSize: `${parseInt(getResultFontSize(result)) * 0.5}px` }}>
+                            {rates && rates[targetCurrency].symbol}
+                        </span>
+                        <span style={{ fontSize: getResultFontSize(result) }}>
+                            {formatNumber(result)}
+                        </span>
                     </div>
                     <p className="text-indigo-200 text-sm mt-4 bg-black/20 inline-block px-3 py-1 rounded-lg">
                         적용 환율: {rates && formatNumber(rates[targetCurrency].rate)}원 = {targetCurrency === 'JPY' ? '100' : '1'} {rates && rates[targetCurrency].symbol}
